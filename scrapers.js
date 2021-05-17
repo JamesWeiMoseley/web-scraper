@@ -12,11 +12,11 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, '/index.html'));
 });
 
-app.listen(port, () => console.log("listening on prot 4000"));
+app.listen(port, () => console.log("listening on port 4000"));
 
 app.use(express.static('public'));
 
-async function scrapeProduct(url) {
+async function scrapeProduct(url, api) {
     axios.get(url).then(urlResponse => {
         let config = {
             headers: {
@@ -25,7 +25,7 @@ async function scrapeProduct(url) {
         }
 
         const $ = cheerio.load(urlResponse.data);
-        console.log("we made it");
+        // console.log("we made it");
         $('body').each((i, element) => {
             const head = $(element) 
             .find("h1")
@@ -45,28 +45,28 @@ async function scrapeProduct(url) {
 
             console.log(bodyText);
 
-            //  axios.post('https://transform-text-api.herokuapp.com/transform-translate-sp', head + head + text, config)
-            //     .then(res => console.log(res.data))
-            //     .catch(error=> console.log(error));
+             axios.post(api, bodyText, config)
+                .then(res => console.log(res.data))
+                .catch(error=> console.log(error));
         })
     }, (error) => console.log("err"));
 
     
 }
 
-function submit() {
-    var url = document.getElementById('url').value;
-    var api = document.getElementById('api').value;
-    console.log(url);
+// function submit() {
+//     var url = document.getElementById('url').value;
+//     var api = document.getElementById('api').value;
+//     console.log(url);
     
-}
+// }
 
 app.post("/", function(req, res) {
     var urlLink = req.body.url;
     var apiLink = req.body.api;
         // console.log(`${urlLink} ${apiLink}`);
-        console.log(urlLink);
-    scrapeProduct(urlLink);
+        console.log("The website we are using: " + urlLink);
+    scrapeProduct(urlLink, apiLink);
 });
 
 
